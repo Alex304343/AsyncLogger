@@ -7,6 +7,8 @@
 #include <type_traits>
 #include <utility>
 
+// Реализация в заголовке из-за шаблона
+
 namespace async_logger {
 
 // Потокобезопасная неограниченная FIFO-очередь (many producers / many consumers).
