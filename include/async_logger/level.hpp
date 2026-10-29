@@ -3,17 +3,17 @@
 #include <cstdint>
 #include <string_view>
 
-namespace async_logger{
+namespace async_logger {
 
-enum class LogLevel : uint8_t{
+enum class LogLevel : std::uint8_t {
     kDebug = 0,
     kInfo = 1,
     kWarning = 2,
     kError = 3,
-    kFatal = 4
+    kFatal = 4,
 };
 
-constexpr std::string_view ToString(LogLevel level) noexcept {
+[[nodiscard]] constexpr std::string_view ToString(LogLevel level) noexcept {
     switch (level) {
         case LogLevel::kDebug:   return "DEBUG";
         case LogLevel::kInfo:    return "INFO";
@@ -24,4 +24,4 @@ constexpr std::string_view ToString(LogLevel level) noexcept {
     return "UNKNOWN";
 }
 
-} // namespace async_logger
+}  // namespace async_logger
