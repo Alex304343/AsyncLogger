@@ -1,0 +1,75 @@
+cmake_minimum_required(VERSION 3.22)
+
+project(async_logger
+    VERSION 0.1.0
+    LANGUAGES CXX
+)
+
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+option(ASYNC_LOGGER_BUILD_EXAMPLES "Build demo and sample executables" ON)
+
+# Основная библиотека
+add_library(async_logger
+    src/formatter.cpp
+)
+
+add_library(async_logger::async_logger ALIAS async_logger)
+
+target_compile_features(async_logger PUBLIC cxx_std_23)
+
+target_include_directories(async_logger
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+target_compile_options(async_logger PRIVATE
+    "$<$<CXX_COMPILER_ID:GNU,Clang>:-Wall;-Wextra;-Wpedantic;-Wconversion;-Wshadow;-Wnon-virtual-dtor;-Wold-style-cast;-Woverloaded-virtual>"
+)
+
+# Исполняемый файл для локальной отладки и запуска
+if(ASYNC_LOGGER_BUILD_EXAMPLES)
+    add_executable(async_logger_demo
+        src/main.cpp
+    )
+    target_link_libraries(async_logger_demo PRIVATE async_logger)
+endif()
+
+# Правила установки для внешних пользователей
+install(TARGETS async_logger
+    EXPORT async_loggerTargets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(DIRECTORY include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(EXPORT async_loggerTargets
+    FILE async_loggerTargets.cmake
+    NAMESPACE async_logger::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/async_logger
+)
+
+configure_package_config_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/async_loggerConfig.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/async_loggerConfig.cmake"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/async_logger
+)
+
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/async_loggerConfigVersion.cmake"
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/async_loggerConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/async_loggerConfigVersion.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/async_logger
+)
