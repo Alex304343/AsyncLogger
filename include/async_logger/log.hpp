@@ -34,5 +34,6 @@ struct Log {
 
 // Log перемещается через deque очереди, исключения при перемещении недопустимы.
 static_assert(std::is_nothrow_move_constructible_v<Log>);
+static_assert(std::is_nothrow_move_assignable_v<Log>);
 
 }  // namespace async_logger
